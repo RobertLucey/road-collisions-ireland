@@ -157,9 +157,9 @@ class Collisions(GenericObjects):
 
     @staticmethod
     def load_all(region=None):
-        import road_collisions
+        import road_collisions_ireland
         return Collisions.from_dir(
-            os.path.join(road_collisions.__path__[0], 'resources'),
+            os.path.join(road_collisions_ireland.__path__[0], 'resources'),
             region=region
         )
 

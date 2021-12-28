@@ -18,7 +18,7 @@ setup(
     package_dir={'': 'src'},
     install_requires=INSTALL_REQUIRES,
     package_data={
-        'road_collisions': [
+        'road_collisions_ireland': [
             'resources/ireland/ireland.csv.tgz'
         ]
     },
