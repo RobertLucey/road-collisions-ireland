@@ -109,7 +109,7 @@ class Collisions(GenericObjects):
         collisions = Collisions()
         for collision_dict in data:
             obj = Collision.parse(
-                collision_dict
+                **collision_dict
             )
 
             # TODO: filter the object out here by whatever prop params
@@ -166,63 +166,102 @@ class Collisions(GenericObjects):
 
 class Collision(GenericObject, RawCollision):
 
-    def __init__(self, **kwargs):
-        self.data = {}
-        for prop in data_props:
-            self.data[prop] = kwargs[prop]
+    __slots__ = [
+        '_lat',
+        '_lng',
+        '_year',
+        '_weekday',
+        '_gender',
+        '_age',
+        '_vehicle_type',
+        '_vehicle',
+        '_hour',
+        '_circumstances',
+        '_num_fatal',
+        '_num_minor',
+        '_num_notinjured',
+        '_num_serious',
+        '_num_unknown',
+        '_speed_limit',
+        '_severity',
+        '_county',
+        '_carrf',
+        '_carri',
+        '_class2',
+        '_goodsrf',
+        '_goodsri',
+        '_mcycrf',
+        '_mcycri',
+        '_otherrf',
+        '_otherri',
+        '_pcycrf',
+        '_pcycri',
+        '_pedrf',
+        '_pedri',
+        '_psvrf',
+        '_psvri',
+        '_unknrf',
+        '_unknri',
+    ]
 
+    def __init__(self, **kwargs):
         super().__init__()
+
+        self._lat = kwargs['lat']
+        self._lng = kwargs['lng']
+        self._year = kwargs['year']
+        self._weekday = kwargs['weekday']
+        self._gender = kwargs['gender']
+        self._age = kwargs['age']
+        self._vehicle_type = kwargs['vehicle_type']
+        self._vehicle = kwargs['vehicle']
+        self._hour = kwargs['hour']
+        self._circumstances = kwargs['circumstances']
+        self._num_fatal = kwargs['num_fatal']
+        self._num_minor = kwargs['num_minor']
+        self._num_notinjured = kwargs['num_notinjured']
+        self._num_serious = kwargs['num_serious']
+        self._num_unknown = kwargs['num_unknown']
+        self._speed_limit = kwargs['speed_limit']
+        self._severity = kwargs['severity']
+        self._county = kwargs['county']
+        self._carrf = kwargs['carrf']
+        self._carri = kwargs['carri']
+        self._class2 = kwargs['class2']
+        self._goodsrf = kwargs['goodsrf']
+        self._goodsri = kwargs['goodsri']
+        self._mcycrf = kwargs['mcycrf']
+        self._mcycri = kwargs['mcycri']
+        self._otherrf = kwargs['otherrf']
+        self._otherri = kwargs['otherri']
+        self._pcycrf = kwargs['pcycrf']
+        self._pcycri = kwargs['pcycri']
+        self._pedrf = kwargs['pedrf']
+        self._pedri = kwargs['pedri']
+        self._psvrf = kwargs['psvrf']
+        self._psvri = kwargs['psvri']
+        self._unknrf = kwargs['unknrf']
+        self._unknri = kwargs['unknri']
 
     @staticmethod
     def parse(data):
         if isinstance(data, Collision):
             return data
 
-        if isinstance(data, dict):
-            if 'data' in data.keys():
-
-                lat_lng = list(
-                    reversed(
-                        epsg_900913_to_4326(
-                            data['geometry']['x'],
-                            data['geometry']['y']
-                        )
-                    )
+        lat_lng = list(
+            reversed(
+                epsg_900913_to_4326(
+                    data['lat'],
+                    data['lng']
                 )
+            )
+        )
+        data['lat'] = lat_lng[0]
+        data['lng'] = lat_lng[1]
 
-                remaps = {  # These are reversed (new: old)
-                    'gender': 'sex',
-                    'num_fatal': 'no_fatal',
-                    'num_minor': 'no_minor',
-                    'num_notinjured': 'no_notinjured',
-                    'num_serious': 'no_serious',
-                    'num_unknown': 'no_unknown',
-                    'speed_limit': 'splimit',
-                    'vehicle_type': 'class1',
-                    'severity': 'type',
-                    'circumstances': 'prcoltyp'
-                }
-
-                parsed = {}
-
-                for prop in data_props:
-                    parsed[prop] = data['data'].get(
-                        remaps.get(prop, prop),
-                        None
-                    )
-
-                parsed['lat'] = lat_lng[0]
-                parsed['lng'] = lat_lng[1]
-
-                return Collision(
-                    **parsed
-                )
-
-            else:
-                # from serialization
-                return Collision(
-                    **data
-                )
+        return Collision(
+            **data
+        )
 
     @property
     def id(self):
@@ -273,46 +312,46 @@ class Collision(GenericObject, RawCollision):
 
     @property
     def geo(self):
-        return [self.data['lat'], self.data['lng']]
+        return [self._lat, self._lng]
 
     @property
     def lat(self):
-        return self.data['lat']
+        return self._lat
 
     @property
     def lng(self):
-        return self.data['lng']
+        return self._lng
 
     @property
     def year(self):
-        if isinstance(self.data['year'], int):
-            if self.data['year'] > 2000:
-                return self.data['year']
-        return int(f'20{str(self.data["year"]).zfill(2)}')
+        if isinstance(self._year, int):
+            if self._year > 2000:
+                return self._year
+        return int(f'20{str(self._year).zfill(2)}')
 
     @property
     def weekday(self):
-        if self.data['weekday'] in WEEKDAY_MAP_VALS:
-            return self.data['weekday']
+        if self._weekday in WEEKDAY_MAP_VALS:
+            return self._weekday
 
         return WEEKDAY_MAP[
-            int(self.data['weekday'])
+            int(self._weekday)
         ]
 
     @property
     def gender(self):
         gender = None
 
-        if self.data['gender'] in GENDER_MAP_VALS:
-            return self.data['gender']
+        if self._gender in GENDER_MAP_VALS:
+            return self._gender
 
         try:
             gender = GENDER_MAP[
-                self.data['gender'].lower()
+                self._gender.lower()
             ]
         except KeyError:
-            logger.debug('Can not parse gender: %s', self.data['gender'])
-            gender = self.data['gender']
+            logger.debug('Can not parse gender: %s', self._gender)
+            gender = self._gender
 
         return gender
 
@@ -320,191 +359,191 @@ class Collision(GenericObject, RawCollision):
     def age(self):
         age = None
 
-        if isinstance(self.data['age'], int):
-            if self.data['age'] % 10 == 0:
-                return self.data['age']
+        if isinstance(self._age, int):
+            if self._age % 10 == 0:
+                return self._age
 
-        if self.data['age'] is None:
+        if self._age is None:
             return None
 
         try:
-            age = int(self.data['age']) * 10
+            age = int(self._age) * 10
         except ValueError:
-            logger.debug('Can not parse age: %s', self.data['age'])
+            logger.debug('Can not parse age: %s', self._age)
 
         return age
 
     @property
     def vehicle_type(self):
-        if self.data['vehicle_type'] in VEHICLE_TYPE_MAP_VALS:
-            return self.data['vehicle_type']
+        if self._vehicle_type in VEHICLE_TYPE_MAP_VALS:
+            return self._vehicle_type
 
         return VEHICLE_TYPE_MAP.get(
-            int(self.data['vehicle_type']),
-            self.data['vehicle_type']
+            int(self._vehicle_type),
+            self._vehicle_type
         )
 
     @property
     def vehicle(self):
-        return self.data['vehicle']
+        return self._vehicle
 
     @property
     def hour(self):
-        if self.data['hour'] in HOUR_MAP_VALS:
-            return self.data['hour']
+        if self._hour in HOUR_MAP_VALS:
+            return self._hour
 
         hour = None
         try:
             hour = HOUR_MAP.get(
-                int(self.data['hour']),
-                self.data['hour']
+                int(self._hour),
+                self._hour
             )
         except ValueError:
-            hour = self.data['hour']
+            hour = self._hour
 
         return hour
 
     @property
     def circumstances(self):
-        if self.data['circumstances'] in CIRCUMSTANCS_MAP_VALS:
-            return self.data['circumstances']
+        if self._circumstances in CIRCUMSTANCS_MAP_VALS:
+            return self._circumstances
 
         circumstances = None
         try:
             circumstances = CIRCUMSTANCS_MAP.get(
-                int(self.data['circumstances']),
-                self.data['circumstances']
+                int(self._circumstances),
+                self._circumstances
             )
         except ValueError:
-            circumstances = self.data['circumstances']
+            circumstances = self._circumstances
 
         return circumstances
 
     @property
     def num_fatal(self):
-        return int(self.data['num_fatal'])
+        return int(self._num_fatal)
 
     @property
     def num_minor(self):
-        return int(self.data['num_minor'])
+        return int(self._num_minor)
 
     @property
     def num_notinjured(self):
-        return int(self.data['num_notinjured'])
+        return int(self._num_notinjured)
 
     @property
     def num_serious(self):
-        return int(self.data['num_serious'])
+        return int(self._num_serious)
 
     @property
     def num_unknown(self):
-        return int(self.data['num_unknown'])
+        return int(self._num_unknown)
 
     @property
     def speed_limit(self):
-        if isinstance(self.data['speed_limit'], int):
-            return self.data['speed_limit']
+        if isinstance(self._speed_limit, int):
+            return self._speed_limit
 
-        if self.data['speed_limit'] is None:
+        if self._speed_limit is None:
             return None
 
         speed_limit = None
         try:
-            speed_limit = int(self.data['speed_limit'])
+            speed_limit = int(self._speed_limit)
         except ValueError:
             logger.debug(
                 'Could not parse speed limit: %s',
-                self.data['speed_limit']
+                self._speed_limit
             )
 
         return speed_limit
 
     @property
     def severity(self):
-        if self.data['severity'] in SEVERITY_MAP_VALS:
-            return self.data['severity']
+        if self._severity in SEVERITY_MAP_VALS:
+            return self._severity
 
         return SEVERITY_MAP[
-            int(self.data['severity'])
+            int(self._severity)
         ]
 
     @property
     def county(self):
-        county_lower = self.data['county'].lower()
+        county_lower = self._county.lower()
         if county_lower in COUNTY_MAP_VALS:
             return county_lower
 
         return COUNTY_MAP[
-            int(self.data['county'])
+            int(self._county)
         ]
 
     # NOT SURE WHAT THE BELOW DO
 
     @property
     def carrf(self):
-        return int(self.data['carrf'])
+        return int(self._carrf)
 
     @property
     def carri(self):
-        return int(self.data['carri'])
+        return int(self._carri)
 
     @property
     def class2(self):
         # TODO: looks interesting
-        return int(self.data['class2'])
+        return int(self._class2)
 
     @property
     def goodsrf(self):
-        return int(self.data['goodsrf'])
+        return int(self._goodsrf)
 
     @property
     def goodsri(self):
-        return int(self.data['goodsri'])
+        return int(self._goodsri)
 
     @property
     def mcycrf(self):
-        return int(self.data['mcycrf'])
+        return int(self._mcycrf)
 
     @property
     def mcycri(self):
-        return int(self.data['mcycrf'])
+        return int(self._mcycrf)
 
     @property
     def otherrf(self):
-        return int(self.data['otherrf'])
+        return int(self._otherrf)
 
     @property
     def otherri(self):
-        return int(self.data['otherri'])
+        return int(self._otherri)
 
     @property
     def pcycrf(self):
-        return int(self.data['pcycrf'])
+        return int(self._pcycrf)
 
     @property
     def pcycri(self):
-        return int(self.data['pcycri'])
+        return int(self._pcycri)
 
     @property
     def pedrf(self):
-        return int(self.data['pedrf'])
+        return int(self._pedrf)
 
     @property
     def pedri(self):
-        return int(self.data['pedri'])
+        return int(self._pedri)
 
     @property
     def psvrf(self):
-        return int(self.data['psvrf'])
+        return int(self._psvrf)
 
     @property
     def psvri(self):
-        return int(self.data['psvri'])
+        return int(self._psvri)
 
     @property
     def unknrf(self):
-        return int(self.data['unknrf'])
+        return int(self._unknrf)
 
     @property
     def unknri(self):
-        return int(self.data['unknri'])
+        return int(self._unknri)
