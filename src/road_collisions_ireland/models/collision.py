@@ -109,7 +109,7 @@ class Collisions(GenericObjects):
         collisions = Collisions()
         for collision_dict in data:
             obj = Collision.parse(
-                **collision_dict
+                collision_dict
             )
 
             # TODO: filter the object out here by whatever prop params
