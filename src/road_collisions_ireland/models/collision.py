@@ -204,17 +204,6 @@ class Collision(GenericObject, RawCollision):
         if isinstance(data, Collision):
             return data
 
-        lat_lng = list(
-            reversed(
-                epsg_900913_to_4326(
-                    data['lat'],
-                    data['lng']
-                )
-            )
-        )
-        data['lat'] = lat_lng[0]
-        data['lng'] = lat_lng[1]
-
         return Collision(
             **data
         )
