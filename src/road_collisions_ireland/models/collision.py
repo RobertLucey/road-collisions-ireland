@@ -31,52 +31,8 @@ from road_collisions_ireland.constants import (
 
 )
 
-
-data_props = [
-    'lat',
-    'lng',
-    'year',
-    'weekday',
-    'gender',
-    'age',
-    'vehicle_type',
-    'vehicle',
-    'hour',
-    'circumstances',
-    'num_fatal',
-    'num_minor',
-    'num_notinjured',
-    'num_serious',
-    'num_unknown',
-    'speed_limit',
-    'severity',
-    'county',
-    'carrf',
-    'carri',
-    'class2',
-    'goodsrf',
-    'goodsri',
-    'mcycrf',
-    'mcycri',
-    'otherrf',
-    'otherri',
-    'pcycrf',
-    'pcycri',
-    'pedrf',
-    'pedri',
-    'psvrf',
-    'psvri',
-    'unknrf',
-    'unknri'
-]
-
-
-
-
-
-
-
-
+def isnan(num):
+    return num != num
 
 
 class Collisions(GenericObjects):
@@ -271,6 +227,46 @@ class Collision(GenericObject, RawCollision):
             ).encode()
         ).hexdigest()
 
+    @property
+    def data(self):
+        return {
+            'lat': self.geo[0],
+            'lng': self.geo[1],
+            'year': self.year,
+            'weekday': self.weekday,
+            'gender': self.gender,
+            'age': self.age,
+            'vehicle_type': self.vehicle_type,
+            'vehicle': self.vehicle,
+            'hour': self.hour,
+            'circumstances': self.circumstances,
+            'num_fatal': self.num_fatal,
+            'num_minor': self.num_minor,
+            'num_notinjured': self.num_notinjured,
+            'num_serious': self.num_serious,
+            'num_unknown': self.num_unknown,
+            'speed_limit': self.speed_limit,
+            'severity': self.severity,
+            'county': self.county,
+            'carrf': self.carrf,
+            'carri': self.carri,
+            'class2': self.class2,
+            'goodsrf': self.goodsrf,
+            'goodsri': self.goodsri,
+            'mcycrf': self.mcycrf,
+            'mcycri': self.mcycri,
+            'otherrf': self.otherrf,
+            'otherri': self.otherri,
+            'pcycrf': self.pcycrf,
+            'pcycri': self.pcycri,
+            'pedrf': self.pedrf,
+            'pedri': self.pedri,
+            'psvrf': self.psvrf,
+            'psvri': self.psvri,
+            'unknrf': self.unknrf,
+            'unknri': self.unknri
+        }
+
     def serialize(self):
         return {
             'lat': self.geo[0],
@@ -341,6 +337,9 @@ class Collision(GenericObject, RawCollision):
     @property
     def gender(self):
         gender = None
+
+        if isnan(self._gender):
+            return None
 
         if self._gender in GENDER_MAP_VALS:
             return self._gender
