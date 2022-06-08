@@ -327,7 +327,7 @@ class Collision(GenericObject, RawCollision):
     def gender(self):
         gender = None
 
-        if isnan(self._gender):
+        if isnan(self._gender) or not self._gender:
             return None
 
         if self._gender in GENDER_MAP_VALS:
