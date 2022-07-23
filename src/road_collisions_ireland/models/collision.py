@@ -356,7 +356,7 @@ class Collision(GenericObject, RawCollision):
         try:
             age = int(self._age) * 10
         except ValueError:
-            logger.debug('Can not parse age: %s', self._age)
+            pass
 
         return age
 
