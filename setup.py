@@ -9,9 +9,10 @@ INSTALL_REQUIRES = (
 
 setup(
     name='road_collisions_ireland',
-    version='0.0.10',
+    version='0.0.11',
     python_requires='>=3.6',
     description='Road collision data for Ireland',
+    long_description='Road collision data for Ireland',
     author='Robert Lucey',
     url='https://github.com/RobertLucey/road-collisions-ireland',
     packages=find_packages('src'),
