@@ -338,7 +338,6 @@ class Collision(GenericObject, RawCollision):
                 self._gender.lower()
             ]
         except KeyError:
-            logger.debug('Can not parse gender: %s', self._gender)
             gender = self._gender
 
         return gender
