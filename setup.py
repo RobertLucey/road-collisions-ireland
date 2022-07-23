@@ -9,7 +9,7 @@ INSTALL_REQUIRES = (
 
 setup(
     name='road_collisions_ireland',
-    version='0.0.11',
+    version='0.0.12',
     python_requires='>=3.6',
     description='Road collision data for Ireland',
     long_description='Road collision data for Ireland',
